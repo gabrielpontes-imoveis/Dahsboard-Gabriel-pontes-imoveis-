@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Conteúdo | Gabriel Pontes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="avatar">GP</div>
+      <div class="profile-info">
+        <span class="profile-name">Gabriel Pontes</span>
+        <span class="profile-handle">@gabrielpontes_imoveis</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Principal</span>
+      <a href="#overview" class="nav-item active" onclick="setPage('overview', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visão Geral
+      </a>
+      <a href="#content" class="nav-item" onclick="setPage('content', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Conteúdo
+      </a>
+      <a href="#platforms" class="nav-item" onclick="setPage('platforms', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Plataformas
+      </a>
+      <span class="nav-section-label">Análise</span>
+      <a href="#growth" class="nav-item" onclick="setPage('growth', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Crescimento
+      </a>
+      <a href="#engagement" class="nav-item" onclick="setPage('engagement', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Engajamento
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-settings" onclick="openSettings()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Configurar APIs
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 id="page-title">Análise de Conteúdo</h1>
+        <p class="subtitle" id="page-subtitle">Últimos 30 dias · <span id="last-updated">—</span></p>
+      </div>
+      <div class="header-actions">
+        <select class="period-select" id="period-select" onchange="changePeriod(this.value)">
+          <option value="7">Últimos 7 dias</option>
+          <option value="30" selected>Últimos 30 dias</option>
+          <option value="90">Últimos 90 dias</option>
+        </select>
+        <button class="btn-refresh" onclick="refreshData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Atualizar
+        </button>
+      </div>
+    </header>
+
+    <!-- Demo Banner -->
+    <div class="demo-banner" id="demo-banner">
+      <span class="demo-icon">⚡</span>
+      <span>Modo demonstração — dados simulados. <a onclick="openSettings()">Configure suas APIs</a> para ver dados reais.</span>
+    </div>
+
+    <!-- Platform Status -->
+    <div class="platform-status">
+      <div class="platform-badge tiktok" id="status-tiktok">
+        <span class="status-dot"></span>
+        <span>🎵</span> TikTok
+        <span class="status-label" id="status-label-tiktok">Demo</span>
+      </div>
+      <div class="platform-badge youtube" id="status-youtube">
+        <span class="status-dot"></span>
+        <span>▶️</span> YouTube
+        <span class="status-label" id="status-label-youtube">Demo</span>
+      </div>
+      <div class="platform-badge instagram" id="status-instagram">
+        <span class="status-dot"></span>
+        <span>📸</span> Instagram
+        <span class="status-label" id="status-label-instagram">Demo</span>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card views">
+        <div class="kpi-icon">👁️</div>
+        <div class="kpi-label">Total de Visualizações</div>
+        <div class="kpi-value" id="kpi-views">—</div>
+        <div class="kpi-trend up" id="kpi-views-trend">—</div>
+        <div class="kpi-subtext">Todas as plataformas</div>
+      </div>
+      <div class="kpi-card followers">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-label">Total de Seguidores</div>
+        <div class="kpi-value" id="kpi-followers">—</div>
+        <div class="kpi-trend up" id="kpi-followers-trend">—</div>
+        <div class="kpi-subtext">Todas as plataformas</div>
+      </div>
+      <div class="kpi-card engagement">
+        <div class="kpi-icon">💬</div>
+        <div class="kpi-label">Taxa de Engajamento</div>
+        <div class="kpi-value" id="kpi-engagement">—</div>
+        <div class="kpi-trend up" id="kpi-engagement-trend">—</div>
+        <div class="kpi-subtext">Média das plataformas</div>
+      </div>
+      <div class="kpi-card posts">
+        <div class="kpi-icon">📱</div>
+        <div class="kpi-label">Posts Publicados</div>
+        <div class="kpi-value" id="kpi-posts">—</div>
+        <div class="kpi-trend" id="kpi-posts-trend">—</div>
+        <div class="kpi-subtext">No período selecionado</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3>Visualizações por Plataforma</h3>
+            <p class="chart-subtitle">Evolução diária no período</p>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="viewsChart"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#ff0050"></div> TikTok</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff0000"></div> YouTube</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e1306c"></div> Instagram</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3>Distribuição</h3>
+            <p class="chart-subtitle">Share de visualizações</p>
+          </div>
+        </div>
+        <div class="donut-container">
+          <canvas id="distributionChart"></canvas>
+          <div class="donut-center" id="donut-center">
+            <div class="donut-total" id="donut-total">—</div>
+            <div class="donut-label">Total</div>
+          </div>
+        </div>
+        <div class="chart-legend" style="justify-content: center; margin-top: 12px;">
+          <div class="legend-item"><div class="legend-dot" style="background:#ff0050"></div> TikTok</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff0000"></div> YouTube</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e1306c"></div> Instagram</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engagement Chart -->
+    <div class="chart-card full-width" style="margin-bottom: 24px;">
+      <div class="chart-header">
+        <div>
+          <h3>Engajamento por Plataforma</h3>
+          <p class="chart-subtitle">Curtidas, comentários e compartilhamentos</p>
+        </div>
+      </div>
+      <div class="chart-container" style="height: 220px;">
+        <canvas id="engagementChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Platform Cards -->
+    <div class="platform-grid">
+      <!-- TikTok -->
+      <div class="platform-card tiktok">
+        <div class="platform-card-header">
+          <div class="platform-logo">🎵</div>
+          <div>
+            <div class="platform-card-title">TikTok</div>
+            <div class="platform-card-handle" id="tt-handle">@gabrielpontes_imoveis</div>
+          </div>
+          <div class="platform-status-pill" id="tt-status-pill">Demo</div>
+        </div>
+        <div class="platform-stats">
+          <div class="platform-stat">
+            <div class="platform-stat-label">Seguidores</div>
+            <div class="platform-stat-value tiktok-color" id="tt-followers">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Visualizações</div>
+            <div class="platform-stat-value tiktok-color" id="tt-views">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Curtidas</div>
+            <div class="platform-stat-value tiktok-color" id="tt-likes">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Engajamento</div>
+            <div class="platform-stat-value tiktok-color" id="tt-engagement">—</div>
+          </div>
+        </div>
+        <div class="mini-chart-container">
+          <canvas id="ttMiniChart"></canvas>
+        </div>
+      </div>
+
+      <!-- YouTube -->
+      <div class="platform-card youtube">
+        <div class="platform-card-header">
+          <div class="platform-logo">▶️</div>
+          <div>
+            <div class="platform-card-title">YouTube</div>
+            <div class="platform-card-handle" id="yt-handle">Gabriel Pontes Imóveis</div>
+          </div>
+          <div class="platform-status-pill" id="yt-status-pill">Demo</div>
+        </div>
+        <div class="platform-stats">
+          <div class="platform-stat">
+            <div class="platform-stat-label">Inscritos</div>
+            <div class="platform-stat-value youtube-color" id="yt-subscribers">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Visualizações</div>
+            <div class="platform-stat-value youtube-color" id="yt-views">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Vídeos</div>
+            <div class="platform-stat-value youtube-color" id="yt-videos">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Watch Time</div>
+            <div class="platform-stat-value youtube-color" id="yt-watchtime">—</div>
+          </div>
+        </div>
+        <div class="mini-chart-container">
+          <canvas id="ytMiniChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Instagram -->
+      <div class="platform-card instagram">
+        <div class="platform-card-header">
+          <div class="platform-logo">📸</div>
+          <div>
+            <div class="platform-card-title">Instagram</div>
+            <div class="platform-card-handle" id="ig-handle">@gabrielpontes_imoveis</div>
+          </div>
+          <div class="platform-status-pill" id="ig-status-pill">Demo</div>
+        </div>
+        <div class="platform-stats">
+          <div class="platform-stat">
+            <div class="platform-stat-label">Seguidores</div>
+            <div class="platform-stat-value instagram-color" id="ig-followers">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Alcance</div>
+            <div class="platform-stat-value instagram-color" id="ig-reach">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Impressões</div>
+            <div class="platform-stat-value instagram-color" id="ig-impressions">—</div>
+          </div>
+          <div class="platform-stat">
+            <div class="platform-stat-label">Posts</div>
+            <div class="platform-stat-value instagram-color" id="ig-posts">—</div>
+          </div>
+        </div>
+        <div class="mini-chart-container">
+          <canvas id="igMiniChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Table -->
+    <div class="content-table-card">
+      <div class="content-table-header">
+        <div>
+          <h3>Conteúdo Recente</h3>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Performance dos últimos posts</p>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="filterContent('all', this)">Todos</button>
+          <button class="filter-tab" onclick="filterContent('tiktok', this)">TikTok</button>
+          <button class="filter-tab" onclick="filterContent('youtube', this)">YouTube</button>
+          <button class="filter-tab" onclick="filterContent('instagram', this)">Instagram</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Conteúdo</th>
+              <th>Plataforma</th>
+              <th>Visualizações</th>
+              <th>Curtidas</th>
+              <th>Comentários</th>
+              <th>Engajamento</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody id="content-table-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>⚙️ Configurar APIs</h2>
+        <button class="modal-close" onclick="closeSettings()">✕</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+        Insira suas credenciais para conectar às plataformas e exibir dados reais. As chaves são salvas localmente no seu navegador.
+      </p>
+
+      <!-- YouTube -->
+      <div class="modal-section">
+        <div class="modal-section-title">
+          <span>▶️</span>
+          <span>YouTube Data API</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">API Key (YouTube Data API v3)</label>
+          <input type="password" class="form-input" id="cfg-yt-key" placeholder="AIzaSy...">
+          <p class="form-hint">Obtenha em console.developers.google.com → YouTube Data API v3</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Channel ID</label>
+          <input type="text" class="form-input" id="cfg-yt-channel" placeholder="UCxxxxxxxxxxxxxxxxxxxxxxxx">
+          <p class="form-hint">Encontre em youtube.com → Seu Canal → Sobre → Compartilhar → Copiar ID</p>
+        </div>
+      </div>
+
+      <!-- Instagram -->
+      <div class="modal-section">
+        <div class="modal-section-title">
+          <span>📸</span>
+          <span>Instagram Graph API</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Access Token (Long-lived)</label>
+          <input type="password" class="form-input" id="cfg-ig-token" placeholder="IGQVJx...">
+          <p class="form-hint">Obtenha via Facebook Developers → Instagram Basic Display API</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Instagram User ID</label>
+          <input type="text" class="form-input" id="cfg-ig-user" placeholder="123456789">
+          <p class="form-hint">Retornado junto com o access token na API do Facebook</p>
+        </div>
+      </div>
+
+      <!-- TikTok -->
+      <div class="modal-section">
+        <div class="modal-section-title">
+          <span>🎵</span>
+          <span>TikTok (Dados Manuais)</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+          A API do TikTok é restrita a contas business. Insira manualmente seus dados do TikTok Analytics.
+        </p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Seguidores</label>
+            <input type="number" class="form-input" id="cfg-tt-followers" placeholder="Ex: 45000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Visualizações (período)</label>
+            <input type="number" class="form-input" id="cfg-tt-views" placeholder="Ex: 120000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Curtidas totais</label>
+            <input type="number" class="form-input" id="cfg-tt-likes" placeholder="Ex: 8500">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-save" onclick="saveConfig()">💾 Salvar Configurações</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
